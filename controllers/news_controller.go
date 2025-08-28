@@ -26,6 +26,53 @@ func GetNewsHome(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(newsList)
 }
 
+func GetNews_Client(w http.ResponseWriter, r *http.Request) {
+	var newsList []models.News
+
+	// Parse pagination query params
+	pageStr := r.URL.Query().Get("page")
+	limitStr := r.URL.Query().Get("limit")
+
+	page := 1
+	limit := 5
+
+	if p, err := strconv.Atoi(pageStr); err == nil && p > 0 {
+		page = p
+	}
+	if l, err := strconv.Atoi(limitStr); err == nil && l > 0 {
+		limit = l
+	}
+
+	offset := (page - 1) * limit
+
+	// Get total record count
+	var total int64
+	config.DB.Model(&models.News{}).Count(&total)
+
+	// Fetch paginated results
+	result := config.DB.
+		Order("created_at DESC").
+		Limit(limit).
+		Offset(offset).
+		Find(&newsList)
+
+	if result.Error != nil {
+		http.Error(w, result.Error.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Response JSON structure
+	response := map[string]interface{}{
+		"data":       newsList,
+		"total":      total,
+		"page":       page,
+		"limit":      limit,
+		"totalPages": int((total + int64(limit) - 1) / int64(limit)),
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
+}
 
 func GetNewsByID(w http.ResponseWriter, r *http.Request) {
 	idStr := r.URL.Query().Get("id")

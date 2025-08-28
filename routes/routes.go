@@ -19,7 +19,11 @@ func RegisterRoutes() *mux.Router {
 
 	// Client routes (public)
 	r.HandleFunc("/api/news_home", controllers.GetNewsHome).Methods("GET")
-	r.HandleFunc("/api/highlights_home", controllers.GetHighlightsHome).Methods("GET")
+	r.HandleFunc("/api/news_home_client", controllers.GetNews_Client).Methods("GET")
+
+	r.HandleFunc("/api/highlights_home", controllers.GetHighlightsHome_Client).Methods("GET")
+	r.HandleFunc("/api/highlights_home_client", controllers.GetHighlights_Client).Methods("GET")
+
 	r.HandleFunc("/api/footers_home", controllers.GetFootersHome).Methods("GET")
 	r.HandleFunc("/api/sponsors_home", controllers.GetSponsorsHome).Methods("GET")
 	r.HandleFunc("/api/news/getbyid", controllers.GetNewsByID).Methods("GET")

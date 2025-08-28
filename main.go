@@ -25,10 +25,7 @@ func main() {
 
 	// 🔁 Load your app router
 	router := routes.RegisterRoutes()
-
-	// ✅ Wrap with prerender first, then CORS (order matters)
-	withPrerender := middleware.PrerenderMiddleware(router)
-	withCORS := middleware.CORSMiddleware(withPrerender)
+	withCORS := middleware.CORSMiddleware(router)
 
 	// Start server
 	port := os.Getenv("PORT")

@@ -8,9 +8,8 @@ import (
 	"wwb99/models"
 )
 
-func GetHighlightsHome(w http.ResponseWriter, r *http.Request) {
+func GetHighlightsHome_Client(w http.ResponseWriter, r *http.Request) {
 	var newsList []models.Highlights
-	// Only select the needed columns
 	result := config.DB.Select("id", "title", "image", "detail").
 		Order("created_at DESC").
 		Limit(4).
@@ -24,6 +23,55 @@ func GetHighlightsHome(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(newsList)
 }
+
+func GetHighlights_Client(w http.ResponseWriter, r *http.Request) {
+	var highlightsList []models.Highlights
+
+	// Parse pagination query params
+	pageStr := r.URL.Query().Get("page")
+	limitStr := r.URL.Query().Get("limit")
+
+	page := 1
+	limit := 5
+
+	if p, err := strconv.Atoi(pageStr); err == nil && p > 0 {
+		page = p
+	}
+	if l, err := strconv.Atoi(limitStr); err == nil && l > 0 {
+		limit = l
+	}
+
+	offset := (page - 1) * limit
+
+	// Get total record count
+	var total int64
+	config.DB.Model(&models.Highlights{}).Count(&total)
+
+	// Fetch paginated results
+	result := config.DB.
+		Order("created_at DESC").
+		Limit(limit).
+		Offset(offset).
+		Find(&highlightsList)
+
+	if result.Error != nil {
+		http.Error(w, result.Error.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Response JSON structure
+	response := map[string]interface{}{
+		"data":       highlightsList,
+		"total":      total,
+		"page":       page,
+		"limit":      limit,
+		"totalPages": int((total + int64(limit) - 1) / int64(limit)),
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
+}
+
 func GetHighlightsByID(w http.ResponseWriter, r *http.Request) {
 	idStr := r.URL.Query().Get("id")
 	if idStr == "" {
