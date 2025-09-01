@@ -23,7 +23,7 @@ func RegisterRoutes() *mux.Router {
 
 	r.HandleFunc("/api/highlights_home", controllers.GetHighlightsHome_Client).Methods("GET")
 	r.HandleFunc("/api/highlights_home_client", controllers.GetHighlights_Client).Methods("GET")
-	r.HandleFunc("/highlights/getbyid", controllers.GetHighlightsByID)
+	r.HandleFunc("/api/highlights/getbyid", controllers.GetHighlightsByID)
 	
 
 	r.HandleFunc("/api/footers_home", controllers.GetFootersHome).Methods("GET")
