@@ -23,6 +23,8 @@ func RegisterRoutes() *mux.Router {
 
 	r.HandleFunc("/api/highlights_home", controllers.GetHighlightsHome_Client).Methods("GET")
 	r.HandleFunc("/api/highlights_home_client", controllers.GetHighlights_Client).Methods("GET")
+	r.HandleFunc("/highlights/getbyid", controllers.GetHighlightsByID)
+	
 
 	r.HandleFunc("/api/footers_home", controllers.GetFootersHome).Methods("GET")
 	r.HandleFunc("/api/sponsors_home", controllers.GetSponsorsHome).Methods("GET")
@@ -45,7 +47,6 @@ func RegisterRoutes() *mux.Router {
 	admin.HandleFunc("/highlights/create", controllers.CreateHighlights).Methods("POST")
 	admin.HandleFunc("/highlights/update", controllers.UpdateHighlights).Methods("PUT")
 	admin.HandleFunc("/highlights/delete", controllers.DeleteHighlights)
-	admin.HandleFunc("/highlights/getbyid", controllers.GetHighlightsByID)
 
 	// Footers
 	admin.HandleFunc("/footers", controllers.GetFooters).Methods("GET")
